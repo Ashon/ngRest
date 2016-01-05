@@ -26,14 +26,16 @@
             var baseURI = '';
 
             this.setBaseURI = function(URI) {
-                provider.baseURI = URI;
+                baseURI = URI;
+                return provider;
             };
 
             this.getBaseURI = function(URI) {
-                return provider.baseURI;
+                return baseURI;
             };
 
             this.registerEndpoint = function($request) {
+                return provider;
             };
 
             // expose provider
@@ -116,3 +118,4 @@
         ]);
 
 })(angular);
+
