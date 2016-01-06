@@ -8,30 +8,28 @@
 
     var $$EndpointFactory = [
 
-        '$api', '$request',
+        '$request', '$endpointConfig',
 
-        function($api, $request) {
+        function($request, $endpointConfig) {
 
-            function $Endpoint(uri) {
+            function $Endpoint(route) {
                 var $endpoint = this;
-                $endpoint.uri = uri;
+                $endpoint.$routePath = route;
             }
 
             $Endpoint.prototype = {
 
-                $$api: $api,
+                $routePath: '',
 
-                uri: '',
-
-                setURI: function(uri) {
-                    this.uri = uri;
+                setRoutePath: function(routePath) {
+                    this.$routePath = routePath;
                     return this;
                 },
-                getURI: function() {
-                    return this.uri;
+                getRoutePath: function() {
+                    return this.$routePath;
                 },
-                getFullURL: function() {
-                    return this.$$api.getBaseURI() + this.uri;
+                getURL: function() {
+                    return $endpointConfig.getBaseURL() + this.$routePath;
                 },
                 dispatch: function(requestSchema) {
 
@@ -39,9 +37,9 @@
 
                     methodNames.forEach(function(method) {
                         if(requestSchema && requestSchema[method] !== undefined) {
-                            // add '$' to avoid of collision with uri.
+                            // add '$' to avoid of collision with url.
                             $endpoint['$' + method] = $request(
-                                $endpoint.getFullURL(), requestSchema, method);
+                                $endpoint.getURL(), requestSchema, method);
                         }
                     });
 
@@ -58,9 +56,25 @@
     // compose ngRest
     angular
         .module('ngRest.$endpoint', [
-            'ngRest.$api',
             'ngRest.$request'
         ])
+
+        .provider('$endpointConfig', function() {
+            this.baseURL = '';
+
+            this.setBaseURL = function(url) {
+                this.baseURL = url;
+            };
+
+            this.getBaseURL = function() {
+                return this.baseURL;
+            };
+
+            this.$get = function() {
+                return this;
+            };
+        })
+
         .factory('$endpoint', $$EndpointFactory);
 
 })(angular);

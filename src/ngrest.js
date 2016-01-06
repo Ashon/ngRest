@@ -3,7 +3,7 @@
 
     angular
         .module('ngRest', [
-            'ngRest.$endpoint',
+            'ngRest.$api',
         ]);
 
 })(angular);

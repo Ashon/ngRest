@@ -3,32 +3,32 @@ describe('ngRest.$endpoint', function() {
 
     beforeEach(module('ngRest.$endpoint'));
 
-    var $api;
+    var $endpointConfig;
     var $endpoint;
 
 
     beforeEach(inject(function($injector) {
-        $api = $injector.get('$api');
+        $endpointConfig = $injector.get('$endpointConfig');
         $endpoint = $injector.get('$endpoint');
     }));
 
-    it('should getFullURL() composition of $api\'s baseURI and $endpoint\'s uri', function() {
+    it('should getURL() composition of $endpointConfig\'s baseURI and $endpoint\'s uri', function() {
 
-        $api.setBaseURI('http://test.com/');
-        var instance = $endpoint().setURI('blog/');
+        $endpointConfig.setBaseURL('http://test.com/');
+        var instance = $endpoint().setRoutePath('blog/');
 
-        expect(instance.getFullURL()).toEqual('http://test.com/blog/');
+        expect(instance.getURL()).toEqual('http://test.com/blog/');
 
     });
 
     it('should be different instance', function() {
-        $api.setBaseURI('http://test.com/');
+        $endpointConfig.setBaseURL('http://test.com/');
 
-        var instanceA = $endpoint().setURI('blog/');
-        var instanceB = $endpoint().setURI('user/');
+        var instanceA = $endpoint().setRoutePath('blog/');
+        var instanceB = $endpoint().setRoutePath('user/');
 
-        expect(instanceA.getFullURL()).toEqual('http://test.com/blog/');
-        expect(instanceB.getFullURL()).toEqual('http://test.com/user/');
+        expect(instanceA.getURL()).toEqual('http://test.com/blog/');
+        expect(instanceB.getURL()).toEqual('http://test.com/user/');
 
         expect(instanceA === instanceB).toEqual(false);
     });
@@ -37,10 +37,10 @@ describe('ngRest.$endpoint', function() {
     it('ngRest.$endpoint - dispatch test', function() {
 
         // provider settings
-        $api.setBaseURI('http://localhost:8080/');
+        $endpointConfig.setBaseURL('http://localhost:8080/');
 
         // factory instance
-        var instance = $endpoint().setURI('blog/');
+        var instance = $endpoint().setRoutePath('blog/');
 
         instance.dispatch({
             get: {
@@ -57,7 +57,7 @@ describe('ngRest.$endpoint', function() {
             }
         });
 
-        expect(instance.getFullURL()).toEqual('http://localhost:8080/blog/');
+        expect(instance.getURL()).toEqual('http://localhost:8080/blog/');
 
         expect(typeof instance.$get).toEqual('function');
         expect(typeof instance.$post).toEqual('function');

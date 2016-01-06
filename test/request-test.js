@@ -24,14 +24,14 @@ var blogWriteSchema = {
 angular
     .module('ngRestEndpointTest', ['ngRest'])
 
-    .config(function($apiProvider) {
-        $apiProvider.setBaseURI('http://localhost:8080/')
+    .config(function($endpointConfigProvider) {
+        $endpointConfigProvider.setBaseURL('http://localhost:8080/')
     })
 
     .controller('endpointRequestTest', function($scope, $endpoint) {
 
         $endpoint()
-            .setURI('dummies/blog.json')
+            .setRoutePath('dummies/blog.json')
             .dispatch({
                 get: {
                     params: blogReadSchema
@@ -60,7 +60,7 @@ angular
 
     .controller('endpointNullableExceptionTest', function($scope, $endpoint) {
         var a = $endpoint()
-            .setURI('dummies/blog.json')
+            .setRoutePath('dummies/blog.json')
             .dispatch({
                 get: {
                     params: blogReadSchema
@@ -79,7 +79,7 @@ angular
         });
 
         var b = $endpoint()
-            .setURI('dummies/user.json')
+            .setRoutePath('dummies/user.json')
             .dispatch({
                 get: {
                     params: {
