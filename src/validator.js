@@ -24,14 +24,18 @@
             throw schemeHasNoType(key);
     }
     function _validateNullable(scheme, key, data) {
-        if(scheme.nullable !== undefined && scheme.nullable === false) {
-            if(data === undefined || data[key] === undefined)
-                throw doesNotExists(key);
-        }
+        if(scheme.nullable !== undefined)
+            if(scheme.nullable === false) {
+                if(data === undefined)
+                    throw doesNotExists(key);
+                else
+                    if(data[key] === undefined)
+                        throw doesNotExists(key);
+            }
     }
     function _validateNumber(scheme, key, data) {
         if(scheme.type === Number)
-            if(scheme.type(data[key]).toString() === 'NaN')
+            if(data !== undefined && scheme.type(data[key]).toString() === 'NaN')
                 throw notANumber(key, data[key]);
     }
     function _validateFunction(scheme, key, data) {
@@ -65,6 +69,7 @@
 
                 if(data !== undefined && data[key] !== undefined)
                     cleanedData[key] = data[key];
+
             });
 
             return cleanedData;
