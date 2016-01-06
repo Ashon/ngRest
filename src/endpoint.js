@@ -1,11 +1,6 @@
 
 (function(angular) { 'use strict';
 
-    var methodNames = [
-        'get', 'post', 'put',
-        'delete', 'head', 'options'
-    ];
-
     var $$EndpointFactory = [
 
         '$request', '$endpointConfig',
@@ -31,24 +26,27 @@
                 getURL: function() {
                     return $endpointConfig.getBaseURL() + this.$routePath;
                 },
+                registerMethod: function(scheme, method) {
+                    // add '$' to avoid of collision with url.
+                    this['$' + method] = $request(this.getURL(), method, scheme);
+
+                    return this;
+                },
                 dispatch: function(requestSchema) {
 
                     var $endpoint = this;
 
-                    methodNames.forEach(function(method) {
-                        if(requestSchema && requestSchema[method] !== undefined) {
-                            // add '$' to avoid of collision with url.
-                            $endpoint['$' + method] = $request(
-                                $endpoint.getURL(), requestSchema, method);
-                        }
-                    });
+                    if(requestSchema !== undefined)
+                        angular.forEach(requestSchema, function(scheme, method) {
+                            $endpoint.registerMethod(scheme, method);
+                        });
 
                     return $endpoint;
                 }
             };
 
             return function() {
-                return new $Endpoint()
+                return new $Endpoint();
             };
         }
     ];

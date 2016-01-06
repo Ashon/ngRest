@@ -25,7 +25,7 @@ angular
     .module('ngRestEndpointTest', ['ngRest'])
 
     .config(function($endpointConfigProvider) {
-        $endpointConfigProvider.setBaseURL('http://localhost:8080/')
+        $endpointConfigProvider.setBaseURL('http://localhost:8080/');
     })
 
     .controller('endpointRequestTest', function($scope, $endpoint) {
@@ -71,6 +71,7 @@ angular
             });
 
         a.$get({
+            id:123,
             author: 'user'
         });
 
@@ -91,5 +92,4 @@ angular
             });
 
         b.$get();
-        console.log(a !== b)
     });

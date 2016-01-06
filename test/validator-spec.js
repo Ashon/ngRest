@@ -15,8 +15,43 @@ describe('ngRest.$validator', function() {
         expect(typeof $validator).toEqual('object');
     });
 
-    it('should be function', function() {
+    it('should be a function', function() {
         expect(typeof $validator.validate).toEqual('function');
+    });
+
+    it('should throw "must not be a function"', function() {
+        var testSchema = {
+            id: {
+                type: Number
+            }
+        };
+        var functionData = function() {};
+
+        expect(function() {
+            $validator.validate(testSchema, functionData);
+        }).toThrow();
+
+    });
+
+    it('should scheme has type', function() {
+        var testSchema = {
+            a: {
+                type: String
+            },
+            id: undefined
+        };
+
+        expect(function() {
+            $validator.validate(testSchema, {});
+        }).toThrow();
+    });
+
+    it('undefined schema should throw', function() {
+        var testSchema = undefined;
+
+        expect(function() {
+            $validator.validate(testSchema, {});
+        }).toThrow();
     });
 
     it('should throw "does not exists"', function() {
@@ -33,7 +68,7 @@ describe('ngRest.$validator', function() {
 
         expect(function() {
             var noIDRequestData = {
-                author:'user'
+                author: 'user'
             };
             $validator.validate(testSchema, noIDRequestData);
 

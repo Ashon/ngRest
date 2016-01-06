@@ -1,9 +1,5 @@
 (function(angular) {
 
-    var requestVariableTypes = [
-        'params', 'data'
-    ];
-
     var $$RequestProvider = function() {
 
         this.$get = [
@@ -12,33 +8,46 @@
 
             function($http, $exceptionHandler, $validator) {
 
-                function $Request(url, requestSchema, method) {
+                function $Request(url, method, schema) {
 
                     var $request = this;
 
+                    $request.$schema = {};
                     $request.$config = {
                         method: method,
                         url: url
                     };
 
-                    return function(requestData) {
+                    function $httpWrapper(requestData) {
 
-                        $request.$schema = requestSchema;
+                        $request.$schema = schema;
                         $request.$rawData = requestData;
 
-                        requestVariableTypes.forEach(function(bodyType) {
-                            if($request.$schema[method][bodyType] !== undefined) {
-                                try {
-                                    $request.$config[bodyType] = $validator.validate(
-                                        $request.$schema[method][bodyType], requestData);
-                                } catch(msg) {
-                                    $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
-                                }
-                            };
+                        angular.forEach($request.$schema, function(scheme, bodyType) {
+                            try {
+                                // if data validate failed, then raise exception.
+                                $request.$config[bodyType] = $validator.validate(scheme, requestData);
+                            } catch(msg) {
+                                $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
+                            }
                         });
 
                         return $http($request.$config);
+                    }
+
+                    $httpWrapper.prototype = {
+                        getURL: function() {
+                            return url;
+                        },
+                        getMethod: function() {
+                            return method;
+                        },
+                        getSchema: function() {
+                            return schema;
+                        }
                     };
+
+                    return $httpWrapper;
                 }
 
                 $Request.prototype = {
@@ -47,8 +56,8 @@
                     $rawData: undefined,
                 };
 
-                return function(url, requestSchema, method) {
-                    return new $Request(url, requestSchema, method);
+                return function(url, method, schema) {
+                    return new $Request(url, method, schema);
                 };
             }
         ];

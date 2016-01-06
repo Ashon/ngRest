@@ -4,10 +4,10 @@
     var $$ApiProvider = function() {
 
         var provider = this;
-        var baseURL = '';
+
+        this.routes = {};
 
         this.setBaseURL = function(URL) {
-            baseURL = URL;
             return provider;
         };
 
@@ -15,7 +15,7 @@
             return baseURL;
         };
 
-        this.registerEndpoint = function($request) {
+        this.registerEndpoint = function($endpoint) {
             return provider;
         };
 
@@ -30,4 +30,4 @@
         .module('ngRest.$api', [ 'ngRest.$endpoint' ])
         .provider('$api', $$ApiProvider);
 
-})(angular)
+})(angular);
