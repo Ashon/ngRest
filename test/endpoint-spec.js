@@ -5,30 +5,31 @@ describe('ngRest.$endpoint', function() {
 
     var $endpointConfig;
     var $endpoint;
-
+    var $httpBackend;
 
     beforeEach(inject(function($injector) {
         $endpointConfig = $injector.get('$endpointConfig');
         $endpoint = $injector.get('$endpoint');
+        $httpBackend = $injector.get('$httpBackend');
     }));
 
     it('should getURL() composition of $endpointConfig\'s baseURI and $endpoint\'s uri', function() {
 
         $endpointConfig.setBaseRoute('http://test.com/');
-        var instance = $endpoint().setRoutePath('blog/');
+        var instance = $endpoint().setRoutePath('dummies/blog.json');
 
-        expect(instance.getURL()).toEqual('http://test.com/blog/');
+        expect(instance.getURL()).toEqual('http://test.com/dummies/blog.json');
 
     });
 
     it('should be different instance', function() {
         $endpointConfig.setBaseRoute('http://test.com/');
 
-        var instanceA = $endpoint().setRoutePath('blog/');
-        var instanceB = $endpoint().setRoutePath('user/');
+        var instanceA = $endpoint().setRoutePath('dummies/blog.json');
+        var instanceB = $endpoint().setRoutePath('dummies/user.json');
 
-        expect(instanceA.getURL()).toEqual('http://test.com/blog/');
-        expect(instanceB.getURL()).toEqual('http://test.com/user/');
+        expect(instanceA.getURL()).toEqual('http://test.com/dummies/blog.json');
+        expect(instanceB.getURL()).toEqual('http://test.com/dummies/user.json');
 
         expect(instanceA === instanceB).toEqual(false);
     });
@@ -66,4 +67,30 @@ describe('ngRest.$endpoint', function() {
 
     });
 
+    it('$endpoint\'s request should be success', function() {
+        $endpointConfig.setBaseRoute('/');
+
+        var instance = $endpoint()
+            .setRoutePath('dummies/blog.json')
+            .dispatch({
+                get: {
+                    params: {
+                        id: {
+                            type: Number
+                        }
+                    }
+                }
+            });
+
+        $httpBackend.expectGET('/dummies/blog.json?id=1').respond(200, {})
+
+        var http = instance.$get({
+            id: 1
+        }).success(function(response) {
+            expect(response).toEqual({})
+        })
+
+        $httpBackend.flush();
+
+    })
 });
