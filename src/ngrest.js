@@ -3,7 +3,10 @@
 
     angular
         .module('ngRest', [
-            'ngRest.$api',
+            'ngRest.$validator',
+            'ngRest.$request',
+            'ngRest.$endpoint',
+            'ngRest.$api'
         ]);
 
 })(angular);

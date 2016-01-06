@@ -25,7 +25,7 @@ angular
     .module('ngRestEndpointTest', ['ngRest'])
 
     .config(function($endpointConfigProvider) {
-        $endpointConfigProvider.setBaseURL('http://localhost:8080/');
+        $endpointConfigProvider.setBaseRoute('/');
     })
 
     .controller('endpointRequestTest', function($scope, $endpoint) {

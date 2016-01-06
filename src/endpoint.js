@@ -1,6 +1,22 @@
 
 (function(angular) { 'use strict';
 
+    var $$EndpointConfigProvider = function() {
+        this.baseURL = '/';
+
+        this.setBaseRoute = function(url) {
+            this.baseURL = url;
+        };
+
+        this.getBaseRoute = function() {
+            return this.baseURL;
+        };
+
+        this.$get = function() {
+            return this;
+        };
+    };
+
     var $$EndpointFactory = [
 
         '$request', '$endpointConfig',
@@ -24,7 +40,7 @@
                     return this.$routePath;
                 },
                 getURL: function() {
-                    return $endpointConfig.getBaseURL() + this.$routePath;
+                    return $endpointConfig.getBaseRoute() + this.$routePath;
                 },
                 registerMethod: function(scheme, method) {
                     // add '$' to avoid of collision with url.
@@ -56,23 +72,7 @@
         .module('ngRest.$endpoint', [
             'ngRest.$request'
         ])
-
-        .provider('$endpointConfig', function() {
-            this.baseURL = '';
-
-            this.setBaseURL = function(url) {
-                this.baseURL = url;
-            };
-
-            this.getBaseURL = function() {
-                return this.baseURL;
-            };
-
-            this.$get = function() {
-                return this;
-            };
-        })
-
+        .provider('$endpointConfig', $$EndpointConfigProvider)
         .factory('$endpoint', $$EndpointFactory);
 
 })(angular);

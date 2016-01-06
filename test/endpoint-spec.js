@@ -14,7 +14,7 @@ describe('ngRest.$endpoint', function() {
 
     it('should getURL() composition of $endpointConfig\'s baseURI and $endpoint\'s uri', function() {
 
-        $endpointConfig.setBaseURL('http://test.com/');
+        $endpointConfig.setBaseRoute('http://test.com/');
         var instance = $endpoint().setRoutePath('blog/');
 
         expect(instance.getURL()).toEqual('http://test.com/blog/');
@@ -22,7 +22,7 @@ describe('ngRest.$endpoint', function() {
     });
 
     it('should be different instance', function() {
-        $endpointConfig.setBaseURL('http://test.com/');
+        $endpointConfig.setBaseRoute('http://test.com/');
 
         var instanceA = $endpoint().setRoutePath('blog/');
         var instanceB = $endpoint().setRoutePath('user/');
@@ -37,7 +37,7 @@ describe('ngRest.$endpoint', function() {
     it('ngRest.$endpoint - dispatch test', function() {
 
         // provider settings
-        $endpointConfig.setBaseURL('http://localhost:8080/');
+        $endpointConfig.setBaseRoute('http://localhost:8080/');
 
         // factory instance
         var instance = $endpoint().setRoutePath('blog/');
