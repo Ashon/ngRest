@@ -19,5 +19,5 @@ describe('ngRest.$request', function() {
         var instance = $request('http://localhost:8080/', 'get');
         expect(instance.prototype.getURL()).toEqual('http://localhost:8080/');
         expect(instance.prototype.getMethod()).toEqual('get');
-    })
+    });
 })

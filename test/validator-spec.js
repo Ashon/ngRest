@@ -11,15 +11,15 @@ describe('ngRest.$validator', function() {
 
     }));
 
-    it('should be object type', function() {
+    it('$validator should be object type', function() {
         expect(typeof $validator).toEqual('object');
     });
 
-    it('should be a function', function() {
+    it('$validator.validate should be a function', function() {
         expect(typeof $validator.validate).toEqual('function');
     });
 
-    it('should throw "must not be a function"', function() {
+    it('should throw "must not be a function" when request data\'s type is function', function() {
         var testSchema = {
             id: {
                 type: Number
@@ -33,7 +33,7 @@ describe('ngRest.$validator', function() {
 
     });
 
-    it('should scheme has type', function() {
+    it('request\'s scheme should has type', function() {
         var testSchema = {
             a: {
                 type: String
@@ -46,7 +46,7 @@ describe('ngRest.$validator', function() {
         }).toThrow();
     });
 
-    it('undefined schema should throw', function() {
+    it('undefined schema should throw error', function() {
         var testSchema = undefined;
 
         expect(function() {

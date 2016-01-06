@@ -67,7 +67,7 @@ describe('ngRest.$endpoint', function() {
 
     });
 
-    it('$endpoint\'s request should be success', function() {
+    it('$endpoint\'s request which has nullable param should be success', function() {
         $endpointConfig.setBaseRoute('/');
 
         var instance = $endpoint()
@@ -76,21 +76,70 @@ describe('ngRest.$endpoint', function() {
                 get: {
                     params: {
                         id: {
-                            type: Number
+                            type: Number,
+                            nullable: true
                         }
                     }
                 }
             });
 
-        $httpBackend.expectGET('/dummies/blog.json?id=1').respond(200, {})
+        $httpBackend.expectGET('/dummies/blog.json?id=1').respond(200, {
+            id: 1,
+            title: 'hello ngRest',
+        });
 
-        var http = instance.$get({
+        instance.$get({
             id: 1
         }).success(function(response) {
-            expect(response).toEqual({})
-        })
+            expect(response).toEqual({
+                id: 1,
+                title: 'hello ngRest',
+            });
+        });
+
+        $httpBackend.expectGET('/dummies/blog.json').respond(200, {
+            id: 1,
+            title: 'hello ngRest',
+        });
+
+        instance.$get().success(function(response) {
+            expect(response).toEqual({
+                id: 1,
+                title: 'hello ngRest',
+            });
+        });
 
         $httpBackend.flush();
 
-    })
+    });
+
+    it('$endpoint\'s request which has not nullable param should throw error', function() {
+
+        $endpointConfig.setBaseRoute('/');
+
+        var instance = $endpoint()
+            .setRoutePath('dummies/blog.json')
+            .dispatch({
+                get: {
+                    params: {
+                        id: {
+                            type: Number,
+                            nullable: false
+                        }
+                    }
+                }
+            });
+
+        expect(function() {
+            $httpBackend.expectGET('/dummies/blog.json').respond(200, {
+                title: 'hello ngRest',
+            });
+
+            instance.$get();
+
+            $httpBackend.flush();
+        }).toThrow();
+
+    });
+
 });
