@@ -11,15 +11,15 @@ describe('ngRest.$validator', function() {
 
     }));
 
-    it('$validator should be object type', function() {
+    it('should be object type', function() {
         expect(typeof $validator).toEqual('object');
     });
 
-    it('$validator.validate should be a function', function() {
+    it('"validate" should be a function', function() {
         expect(typeof $validator.validate).toEqual('function');
     });
 
-    it('should throw "must not be a function" when request data\'s type is function', function() {
+    it('should throw "must not be a function" when request data\'s type is "function"', function() {
         var testSchema = {
             id: {
                 type: Number
@@ -33,7 +33,7 @@ describe('ngRest.$validator', function() {
 
     });
 
-    it('request\'s scheme should has type', function() {
+    it('should throw "scheme has no type" when scheme is undefined', function() {
         var testSchema = {
             a: {
                 type: String
@@ -46,7 +46,7 @@ describe('ngRest.$validator', function() {
         }).toThrow();
     });
 
-    it('undefined schema should throw error', function() {
+    it('should throw error when schema is undefined', function() {
         var testSchema = undefined;
 
         expect(function() {
@@ -54,7 +54,7 @@ describe('ngRest.$validator', function() {
         }).toThrow();
     });
 
-    it('should throw "does not exists"', function() {
+    it('should throw "does not exists" when scheme is not null but param is null', function() {
         var testSchema = {
             id: {
                 type: Number,
@@ -75,7 +75,7 @@ describe('ngRest.$validator', function() {
         }).toThrow();
     });
 
-    it('should throw "not a number"', function() {
+    it('should throw "not a number" when params is not a number', function() {
         var testSchema = {
             id: {
                 type: Number,
@@ -97,7 +97,7 @@ describe('ngRest.$validator', function() {
         }).toThrow();
     });
 
-    it('should pass validate data', function() {
+    it('should returns cleaned data', function() {
         var testSchema = {
             id: {
                 type: Number,
@@ -123,12 +123,12 @@ describe('ngRest.$validator', function() {
 
     });
 
-    it('should pass to nullable data', function() {
+    it('should throw error when param is null', function() {
 
         var testSchema = {
             id: {
                 type: Number,
-                nullable: true
+                nullable: false
             },
             author: {
                 type: String,

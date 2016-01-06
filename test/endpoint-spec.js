@@ -13,7 +13,7 @@ describe('ngRest.$endpoint', function() {
         $httpBackend = $injector.get('$httpBackend');
     }));
 
-    it('should getURL() composition of $endpointConfig\'s baseURI and $endpoint\'s uri', function() {
+    it('"getURL()"s return value should be composition of $endpointConfig\'s baseRoute and $endpoint\'s routePath', function() {
 
         $endpointConfig.setBaseRoute('http://test.com/');
         var instance = $endpoint().setRoutePath('dummies/blog.json');
@@ -22,7 +22,7 @@ describe('ngRest.$endpoint', function() {
 
     });
 
-    it('should be different instance', function() {
+    it('each instance should be different', function() {
         $endpointConfig.setBaseRoute('http://test.com/');
 
         var instanceA = $endpoint().setRoutePath('dummies/blog.json');
@@ -35,7 +35,7 @@ describe('ngRest.$endpoint', function() {
     });
 
 
-    it('ngRest.$endpoint - dispatch test', function() {
+    it('dispatched instance has $[method] function', function() {
 
         // provider settings
         $endpointConfig.setBaseRoute('http://localhost:8080/');
@@ -67,7 +67,7 @@ describe('ngRest.$endpoint', function() {
 
     });
 
-    it('$endpoint\'s request which has nullable param should be success', function() {
+    it('"request" which has nullable param should response success', function() {
         $endpointConfig.setBaseRoute('/');
 
         var instance = $endpoint()
@@ -97,6 +97,8 @@ describe('ngRest.$endpoint', function() {
             });
         });
 
+        $httpBackend.flush();
+
         $httpBackend.expectGET('/dummies/blog.json').respond(200, {
             id: 1,
             title: 'hello ngRest',
@@ -113,7 +115,7 @@ describe('ngRest.$endpoint', function() {
 
     });
 
-    it('$endpoint\'s request which has not nullable param should throw error', function() {
+    it('"request" which has not nullable param should throw error', function() {
 
         $endpointConfig.setBaseRoute('/');
 

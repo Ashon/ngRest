@@ -1,46 +1,45 @@
 
 (function(angular) { 'use strict';
 
-    // Exceptions
-    function schemaIsUndefined() {
-        return 'request schema is undefined';
+    function isUndefined(value) {
+        return value === undefined;
     }
-    function schemeHasNoType(key) {
-        return '\'' + key + '\' has no type';
+    function isFunction(value) {
+        return typeof value === 'function';
     }
-    function doesNotExists(key) {
-        return '\'' + key + '\' does not exists.';
+    function isValidNumber(value) {
+        return !isNaN(value) && isFinite(value);
     }
-    function notANumber(key, value) {
-        return key + ' \'' + value + '\' is not a number';
+    function hasValue(object, key) {
+        return !isUndefined(object) && !isUndefined(object[key]);
     }
-    function paramIsFunction() {
-        return 'request data is function.';
+    function hasSchemeType(scheme) {
+        return hasValue(scheme, 'type');
+    }
+    function isNullableScheme(scheme) {
+        return hasValue(scheme, 'nullable') && scheme.nullable === true;
+    }
+    function isSchemeTypeNumber(scheme) {
+        return hasSchemeType(scheme) && scheme.type === Number;
     }
 
     // validation methods
-    function _validateSchemeHasType(scheme, key) {
-        if(scheme === undefined || scheme.type === undefined)
-            throw schemeHasNoType(key);
+    function raiseIfSchemeHasNoType(scheme, key) {
+        if(!hasSchemeType(scheme))
+            throw '\'' + key + '\' has no type';
     }
-    function _validateNullable(scheme, key, data) {
-        if(scheme.nullable !== undefined)
-            if(scheme.nullable === false) {
-                if(data === undefined)
-                    throw doesNotExists(key);
-                else
-                    if(data[key] === undefined)
-                        throw doesNotExists(key);
-            }
+    function raiseIfDataIsNull(scheme, key, data) {
+        if(!isNullableScheme(scheme) && !hasValue(data, key))
+            throw '\'' + key + '\' does not exists.';
     }
-    function _validateNumber(scheme, key, data) {
-        if(scheme.type === Number)
-            if(data !== undefined && scheme.type(data[key]).toString() === 'NaN')
-                throw notANumber(key, data[key]);
+    function raiseIfSchemeIsFunction(scheme, key, data) {
+        if(isFunction(data))
+            throw 'request data is function.';
     }
-    function _validateFunction(scheme, key, data) {
-        if(typeof data === 'function')
-            throw paramIsFunction();
+    function raiseIfDataIsNotValidNumber(scheme, key, data) {
+        if(isSchemeTypeNumber(scheme))
+            if(hasValue(data, key) && !isValidNumber(data[key]))
+                throw key + ' \'' + data[key] + '\' is not valid number';
     }
 
     function $Validator() {}
@@ -49,18 +48,18 @@
 
         validate: function(schema, data) {
 
-            if(schema === undefined)
-                throw schemaIsUndefined();
+            if(isUndefined(schema))
+                throw 'request schema is undefined';
 
             var cleanedData = {};
 
             angular.forEach(schema, function(scheme, key) {
 
                 var validationRuleset = [
-                    _validateSchemeHasType,
-                    _validateNullable,
-                    _validateNumber,
-                    _validateFunction
+                    raiseIfSchemeHasNoType,
+                    raiseIfDataIsNull,
+                    raiseIfDataIsNotValidNumber,
+                    raiseIfSchemeIsFunction
                 ];
 
                 validationRuleset.forEach(function(rule) {
