@@ -35,23 +35,23 @@
     // validation methods
     function raiseIfDataIsNotPrimitiveType(scheme, key, data) {
         if(hasValue(data, key) && !isPrimitive(data[key]))
-            throw $validatorErr('\'' + key + '\' is not primitive value');
+            throw $validatorErr('valid', '\'' + key + '\' is not primitive value');
     }
     function raiseIfSchemeHasNoType(scheme, key) {
         if(!hasSchemeType(scheme))
-            throw $validatorErr('\'' + key + '\' has no type');
+            throw $validatorErr('valid', '\'' + key + '\' has no type');
     }
     function raiseIfDataIsNull(scheme, key, data) {
         if(!isNullableScheme(scheme) && !hasValue(data, key))
-            throw $validatorErr('\'' + key + '\' does not exists.');
+            throw $validatorErr('valid', '\'' + key + '\' does not exists.');
     }
     function raiseIfSchemeIsFunction(scheme, key, data) {
         if(angular.isFunction(data))
-            throw $validatorErr('request data is function.');
+            throw $validatorErr('valid', 'request data is function.');
     }
     function raiseIfDataIsNotValidNumber(scheme, key, data) {
         if(isSchemeTypeNumber(scheme) && hasValue(data, key) && !isValidNumber(data[key]))
-            throw $validatorErr(key + ' \'' + data[key] + '\' is not valid number');
+            throw $validatorErr('valid', key + ' \'' + data[key] + '\' is not valid number');
     }
 
     function $Validator(rules) {
