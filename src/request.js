@@ -1,4 +1,5 @@
-(function(angular) {
+
+(function(angular) { 'use strict';
 
     var $$RequestProvider = function() {
 

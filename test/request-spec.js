@@ -1,4 +1,6 @@
 
+'use strict';
+
 describe('ngRest.$request', function() {
 
     var $request,

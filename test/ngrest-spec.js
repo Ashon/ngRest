@@ -1,4 +1,6 @@
 
+'use strict';
+
 describe('ngRest', function() {
 
     var $api,

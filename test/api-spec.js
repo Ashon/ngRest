@@ -1,4 +1,6 @@
 
+'use strict';
+
 describe('ngRest.$api', function() {
 
     beforeEach(module('ngRest.$api'));
@@ -30,7 +32,6 @@ describe('ngRest.$api', function() {
 
         expect($apiConfig.setBaseRoute).toBeDefined();
         expect($apiConfig.getBaseRoute).toBeDefined();
-
         expect($apiConfig.nothing).toBeUndefined();
 
     });
@@ -81,26 +82,26 @@ describe('ngRest.$api', function() {
     it('should be success to register endpoint', function() {
 
         var blogAPI = $api('blogAPI', '/blog/');
-
         var endpointA = blogAPI.$endpoint('post/');
+
+        expect(blogAPI.getBaseRoute()).toEqual('/blog/');
+        expect(blogAPI.post).toBeDefined();
+        expect(endpointA.getURL()).toEqual('/blog/post/');
+        expect(blogAPI.post.getURL()).toEqual('/blog/post/');
+        expect(blogAPI.post.hasAvailableMethod()).toBeFalsy();
+    });
+
+    it('should be success to attach endpoint', function() {
+        var blogAPI = $api('blogAPI', '/blog/');
+
         var endpointB = $endpoint('post/comment/');
 
         blogAPI.attach(endpointB);
-
-        expect(blogAPI.getBaseRoute()).toEqual('/blog/');
-
-        expect(blogAPI.post).toBeDefined();
-        expect(blogAPI.post.comment).toBeDefined();
-
-        expect(endpointA.getURL()).toEqual('/blog/post/');
         expect(endpointB.getURL()).toEqual('/blog/post/comment/');
 
-        expect(blogAPI.post.getURL()).toEqual('/blog/post/');
+        expect(blogAPI.post.comment).toBeDefined();
         expect(blogAPI.post.comment.getURL()).toEqual('/blog/post/comment/');
-
-        expect(blogAPI.post.hasAvailableMethod()).toBeFalsy();
         expect(blogAPI.post.comment.hasAvailableMethod()).toBeFalsy();
-
     });
 
 });

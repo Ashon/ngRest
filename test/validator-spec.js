@@ -1,4 +1,6 @@
 
+'use strict';
+
 describe('ngRest.$validator', function() {
 
     beforeEach(module('ngRest.$validator'));

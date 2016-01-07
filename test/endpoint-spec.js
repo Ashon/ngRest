@@ -1,4 +1,6 @@
 
+'use strict';
+
 describe('ngRest.$endpoint', function() {
 
     beforeEach(module('ngRest.$endpoint'));
