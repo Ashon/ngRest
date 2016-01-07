@@ -18,10 +18,18 @@ describe('ngRest.$request', function() {
         expect(typeof instance).toEqual('function');
     });
 
-    it('should has "url" and "method"', function() {
-        var instance = $request('http://localhost:8080/', 'get');
-        expect(instance.prototype.getURL()).toEqual('http://localhost:8080/');
-        expect(instance.prototype.getMethod()).toEqual('get');
+    it('should has "url", "method", "schema"', function() {
+        var schema = {
+            params: {
+                id: {
+                    type: Number
+                }
+            }
+        }
+        var instance = $request('http://localhost:8080/', 'get', schema);
+        expect(instance.getURL()).toEqual('http://localhost:8080/');
+        expect(instance.getMethod()).toEqual('get');
+        expect(instance.getSchema()).toEqual(schema);
     });
 
 });

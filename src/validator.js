@@ -1,17 +1,11 @@
 
 (function(angular) { 'use strict';
 
-    function isUndefined(value) {
-        return value === undefined;
-    }
-    function isFunction(value) {
-        return typeof value === 'function';
-    }
     function isValidNumber(value) {
         return !isNaN(value) && isFinite(value);
     }
     function hasValue(object, key) {
-        return !isUndefined(object) && !isUndefined(object[key]);
+        return angular.isDefined(object) && angular.isDefined(object[key]);
     }
     function hasSchemeType(scheme) {
         return hasValue(scheme, 'type');
@@ -20,7 +14,7 @@
         return hasValue(scheme, 'nullable') && scheme.nullable === true;
     }
     function isSchemeTypeNumber(scheme) {
-        return hasSchemeType(scheme) && scheme.type === Number;
+        return hasSchemeType(scheme) && toString.call(scheme.type()) === '[object Number]';
     }
 
     // validation methods
@@ -33,40 +27,37 @@
             throw '\'' + key + '\' does not exists.';
     }
     function raiseIfSchemeIsFunction(scheme, key, data) {
-        if(isFunction(data))
+        if(angular.isFunction(data))
             throw 'request data is function.';
     }
     function raiseIfDataIsNotValidNumber(scheme, key, data) {
-        if(isSchemeTypeNumber(scheme))
-            if(hasValue(data, key) && !isValidNumber(data[key]))
-                throw key + ' \'' + data[key] + '\' is not valid number';
+        if(isSchemeTypeNumber(scheme) && hasValue(data, key) && !isValidNumber(data[key]))
+            throw key + ' \'' + data[key] + '\' is not valid number';
     }
 
-    function $Validator() {}
+    function $Validator(rules) {
+        this.$rules = rules;
+    }
 
     $Validator.prototype = {
 
+        $rules: [],
+
         validate: function(schema, data) {
 
-            if(isUndefined(schema))
+            if(angular.isUndefined(schema))
                 throw 'request schema is undefined';
 
+            var self = this;
             var cleanedData = {};
 
             angular.forEach(schema, function(scheme, key) {
 
-                var validationRuleset = [
-                    raiseIfSchemeHasNoType,
-                    raiseIfDataIsNull,
-                    raiseIfDataIsNotValidNumber,
-                    raiseIfSchemeIsFunction
-                ];
-
-                validationRuleset.forEach(function(rule) {
+                self.$rules.forEach(function(rule) {
                     rule.call(null, scheme, key, data);
                 });
 
-                if(data !== undefined && data[key] !== undefined)
+                if(hasValue(data, key))
                     cleanedData[key] = data[key];
 
             });
@@ -75,8 +66,15 @@
         }
     };
 
+    var defaultRuleset = [
+        raiseIfSchemeHasNoType,
+        raiseIfDataIsNull,
+        raiseIfDataIsNotValidNumber,
+        raiseIfSchemeIsFunction
+    ];
+
     var $$ValidatorFactory = function() {
-        return new $Validator();
+        return new $Validator(defaultRuleset);
     };
 
     angular

@@ -10,29 +10,29 @@
 
                 function $Request(url, method, schema) {
 
-                    var $request = this;
+                    var self = this;
 
-                    $request.$schema = {};
-                    $request.$config = {
+                    self.$schema = {};
+                    self.$config = {
                         method: method,
                         url: url
                     };
 
                     function $httpWrapper(requestData) {
 
-                        $request.$schema = schema;
-                        $request.$rawData = requestData;
+                        self.$schema = schema;
+                        self.$rawData = requestData;
 
-                        angular.forEach($request.$schema, function(scheme, bodyType) {
+                        angular.forEach(self.$schema, function(scheme, bodyType) {
                             try {
                                 // if data validate failed, then raise exception.
-                                $request.$config[bodyType] = $validator.validate(scheme, requestData);
+                                self.$config[bodyType] = $validator.validate(scheme, requestData);
                             } catch(msg) {
                                 $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
                             }
                         });
 
-                        return $http($request.$config);
+                        return $http(self.$config);
                     }
 
                     $httpWrapper.prototype = {
@@ -47,7 +47,7 @@
                         }
                     };
 
-                    return $httpWrapper;
+                    return angular.extend($httpWrapper, $httpWrapper.prototype);
                 }
 
                 $Request.prototype = {

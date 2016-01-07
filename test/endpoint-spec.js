@@ -59,10 +59,8 @@ describe('ngRest.$endpoint', function() {
         });
 
         expect(instance.getURL()).toEqual('http://localhost:8080/blog/');
-
         expect(typeof instance.$get).toEqual('function');
         expect(typeof instance.$post).toEqual('function');
-
         expect(typeof instance.$put).toEqual('undefined');
 
     });
