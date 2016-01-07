@@ -50,7 +50,38 @@ describe('ngRest.$endpoint', function() {
         expect(instanceA.getURL()).toEqual('http://test.com/dummies/blog.json');
         expect(instanceB.getURL()).toEqual('http://test.com/dummies/user.json');
 
-        expect(instanceA === instanceB).toEqual(false);
+        expect(instanceA).not.toEqual(instanceB);
+    });
+
+    it('endpoint has no available methods', function() {
+        var instance = $endpoint('blog/');
+
+        expect(instance.hasAvailableMethod()).toBeFalsy();
+        expect(instance.getAvailableMethods().length).toEqual(0);
+
+    });
+
+    it('dispatched endpoint has available methods', function() {
+        var instance = $endpoint('blog/');
+
+        instance.dispatch({
+            get: {
+                params: {
+                    id: String
+                }
+            },
+            post: {
+                data: {
+                    title: String,
+                    content: String,
+                    author: String
+                }
+            }
+        });
+
+        expect(instance.hasAvailableMethod()).toBeTruthy();
+        expect(instance.getAvailableMethods().length).toEqual(2);
+
     });
 
 
@@ -60,7 +91,7 @@ describe('ngRest.$endpoint', function() {
         $endpointConfig.setBaseRoute('http://localhost:8080/');
 
         // factory instance
-        var instance = $endpoint().setRoutePath('blog/');
+        var instance = $endpoint('blog/');
 
         instance.dispatch({
             get: {
@@ -87,8 +118,7 @@ describe('ngRest.$endpoint', function() {
     it('"request" which has nullable param should response success', function() {
         $endpointConfig.setBaseRoute('/');
 
-        var instance = $endpoint()
-            .setRoutePath('dummies/blog.json')
+        var instance = $endpoint('dummies/blog.json')
             .dispatch({
                 get: {
                     params: {
@@ -136,8 +166,7 @@ describe('ngRest.$endpoint', function() {
 
         $endpointConfig.setBaseRoute('/');
 
-        var instance = $endpoint()
-            .setRoutePath('dummies/blog.json')
+        var instance = $endpoint('dummies/blog.json')
             .dispatch({
                 get: {
                     params: {

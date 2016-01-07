@@ -49,6 +49,20 @@
                     this['$' + method] = $request(this.getURL(), method, scheme);
                     return this;
                 },
+                getAvailableMethods: function() {
+                    var self = this;
+
+                    var knownMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'option'];
+
+                    return knownMethods.map(function(method) {
+                        return '$' + method;
+                    }).filter(function($method) {
+                        return Object.keys(self).indexOf($method) != -1;
+                    });
+                },
+                hasAvailableMethod: function() {
+                    return this.getAvailableMethods().length > 0;
+                },
                 dispatch: function(requestSchema) {
 
                     var self = this;
@@ -63,8 +77,8 @@
                 getBaseRoute: $endpointConfig.getBaseRoute
             };
 
-            return function() {
-                return new $Endpoint();
+            return function(route) {
+                return new $Endpoint(route);
             };
         }
     ];
