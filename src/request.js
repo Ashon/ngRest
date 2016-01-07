@@ -23,10 +23,10 @@
                         self.$schema = schema;
                         self.$rawData = requestData;
 
-                        angular.forEach(self.$schema, function(scheme, bodyType) {
+                        angular.forEach(self.$schema, function(schema, bodyType) {
                             try {
                                 // if data validate failed, then raise exception.
-                                self.$config[bodyType] = $validator.validate(scheme, requestData);
+                                self.$config[bodyType] = $validator.validate(schema, requestData);
                             } catch(msg) {
                                 $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
                             }
