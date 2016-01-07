@@ -3,26 +3,33 @@
 
     var $$ApiProvider = function() {
 
-        var provider = this;
+        var self = this;
 
         this.routes = {};
 
-        this.setBaseURL = function(URL) {
-            return provider;
-        };
-
-        this.getBaseURL = function(URL) {
-            return baseURL;
-        };
-
         this.registerEndpoint = function($endpoint) {
-            return provider;
+            return self;
         };
 
         // expose provider
-        this.$get = function() {
-            return provider;
-        };
+        this.$get = [
+
+            '$endpointConfig',
+
+            function($endpointConfig) {
+
+                var facades = [
+                    'setBaseRoute',
+                    'getBaseRoute'
+                ];
+
+                facades.forEach(function(fn) {
+                    self[fn] = $endpointConfig[fn];
+                })
+
+                return self;
+            }
+        ];
 
     };
 

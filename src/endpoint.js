@@ -2,18 +2,21 @@
 (function(angular) { 'use strict';
 
     var $$EndpointConfigProvider = function() {
-        this.baseURL = '/';
 
-        this.setBaseRoute = function(url) {
-            this.baseURL = url;
+        var self = this;
+
+        self.baseURL = '/';
+
+        self.setBaseRoute = function(url) {
+            self.baseURL = url;
         };
 
-        this.getBaseRoute = function() {
-            return this.baseURL;
+        self.getBaseRoute = function() {
+            return self.baseURL;
         };
 
-        this.$get = function() {
-            return this;
+        self.$get = function() {
+            return self;
         };
     };
 
@@ -55,7 +58,9 @@
                     });
 
                     return self;
-                }
+                },
+                setBaseRoute: $endpointConfig.setBaseRoute,
+                getBaseRoute: $endpointConfig.getBaseRoute
             };
 
             return function() {

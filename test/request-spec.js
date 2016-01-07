@@ -1,8 +1,8 @@
 
 describe('ngRest.$request', function() {
 
-    var $request;
-    var $httpBackend;
+    var $request,
+        $httpBackend;
 
     beforeEach(module('ngRest.$request'));
 

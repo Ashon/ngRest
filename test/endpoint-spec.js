@@ -3,15 +3,34 @@ describe('ngRest.$endpoint', function() {
 
     beforeEach(module('ngRest.$endpoint'));
 
-    var $endpointConfig;
-    var $endpoint;
-    var $httpBackend;
+    var $endpoint,
+        $endpointConfig,
+        $httpBackend;
 
     beforeEach(inject(function($injector) {
+
         $endpointConfig = $injector.get('$endpointConfig');
         $endpoint = $injector.get('$endpoint');
         $httpBackend = $injector.get('$httpBackend');
+
     }));
+
+
+    it('should has eqaul baseRoute between $endpointConfig and $endpoint which called in $endpointConfig', function() {
+
+        $endpointConfig.setBaseRoute('/test/');
+
+        expect($endpoint().getBaseRoute()).toEqual('/test/');
+        expect($endpointConfig.getBaseRoute()).toEqual('/test/');
+    });
+
+    it('should has eqaul baseRoute between $endpointConfig and $endpoint which called in $endpoint', function() {
+
+        $endpoint().setBaseRoute('/test/');
+
+        expect($endpoint().getBaseRoute()).toEqual('/test/');
+        expect($endpointConfig.getBaseRoute()).toEqual('/test/');
+    });
 
     it('"getURL()"s return value should be composition of $endpointConfig\'s baseRoute and $endpoint\'s routePath', function() {
 

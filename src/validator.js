@@ -1,6 +1,19 @@
 
 (function(angular) { 'use strict';
 
+    function isPrimitive(value) {
+        switch (typeof value) {
+            case 'number': /* falls through */
+            case 'boolean': /* falls through */
+            case 'string':
+                return true;
+            default:
+                return false;
+        }
+    }
+    function isNumberObject(object) {
+        return angular.isFunction(object) && toString.call(object()) === '[object Number]';
+    }
     function isValidNumber(value) {
         return !isNaN(value) && isFinite(value);
     }
@@ -14,10 +27,14 @@
         return hasValue(scheme, 'nullable') && scheme.nullable === true;
     }
     function isSchemeTypeNumber(scheme) {
-        return hasSchemeType(scheme) && toString.call(scheme.type()) === '[object Number]';
+        return hasSchemeType(scheme) && isNumberObject(scheme.type);
     }
 
     // validation methods
+    function raiseIfDataIsNotPrimitiveType(scheme, key, data) {
+        if(hasValue(data, key) && !isPrimitive(data[key]))
+            throw '\'' + key + '\' is not primitive value';
+    }
     function raiseIfSchemeHasNoType(scheme, key) {
         if(!hasSchemeType(scheme))
             throw '\'' + key + '\' has no type';
@@ -67,6 +84,7 @@
     };
 
     var defaultRuleset = [
+        raiseIfDataIsNotPrimitiveType,
         raiseIfSchemeHasNoType,
         raiseIfDataIsNull,
         raiseIfDataIsNotValidNumber,
