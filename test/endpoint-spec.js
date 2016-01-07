@@ -130,16 +130,21 @@ describe('ngRest.$endpoint', function() {
                 }
             });
 
+        $httpBackend.expectGET('/dummies/blog.json?id=1').respond(200, {
+            title: 'hello ngRest',
+        });
+
+        // throw error before request
         expect(function() {
-            $httpBackend.expectGET('/dummies/blog.json').respond(200, {
-                title: 'hello ngRest',
-            });
-
             instance.$get();
-
-            $httpBackend.flush();
         }).toThrow();
 
+        // response success
+        instance.$get({ id : 1 }).success(function(response) {
+            expect(response.title).toEqual('hello ngRest');
+        });
+
+        $httpBackend.flush();
     });
 
 });
