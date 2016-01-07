@@ -145,6 +145,7 @@ describe('ngRest.$endpoint', function() {
         });
 
         $httpBackend.flush();
+
     });
 
 });
