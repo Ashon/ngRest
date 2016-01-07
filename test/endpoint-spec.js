@@ -32,6 +32,7 @@ describe('ngRest.$endpoint', function() {
 
         expect($endpoint().getBaseRoute()).toEqual('/test/');
         expect($endpointConfig.getBaseRoute()).toEqual('/test/');
+
     });
 
     it('"getURL()"s return value should be composition of $endpointConfig\'s baseRoute and $endpoint\'s routePath', function() {
@@ -44,6 +45,7 @@ describe('ngRest.$endpoint', function() {
     });
 
     it('each instance should be different', function() {
+
         $endpointConfig.setBaseRoute('http://test.com/');
 
         var instanceA = $endpoint().setRoutePath('dummies/blog.json');
@@ -53,9 +55,11 @@ describe('ngRest.$endpoint', function() {
         expect(instanceB.getURL()).toEqual('http://test.com/dummies/user.json');
 
         expect(instanceA).not.toEqual(instanceB);
+
     });
 
     it('endpoint has no available methods', function() {
+
         var instance = $endpoint('blog/');
 
         expect(instance.hasAvailableMethod()).toBeFalsy();
@@ -64,6 +68,7 @@ describe('ngRest.$endpoint', function() {
     });
 
     it('dispatched endpoint has available methods', function() {
+
         var instance = $endpoint('blog/');
 
         instance.dispatch({
@@ -118,6 +123,7 @@ describe('ngRest.$endpoint', function() {
     });
 
     it('"request" which has nullable param should response success', function() {
+
         $endpointConfig.setBaseRoute('/');
 
         var instance = $endpoint('dummies/blog.json')

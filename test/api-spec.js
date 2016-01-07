@@ -62,12 +62,14 @@ describe('ngRest.$api', function() {
     });
 
     it('should generate different instance', function() {
+
         var apiA = $api('apiA');
         var apiB = $api('apiB');
 
         expect(apiA).not.toEqual(apiB);
         expect(apiA.name).toEqual('apiA');
         expect(apiB.name).toEqual('apiB');
+
     });
 
     it('should share baseRoute between different instances', function() {
@@ -77,6 +79,7 @@ describe('ngRest.$api', function() {
 
         expect(apiA).not.toEqual(apiB);
         expect(apiA.getBaseRoute()).toEqual(apiB.getBaseRoute());
+
     });
 
     it('should be success to register endpoint', function() {
@@ -89,11 +92,12 @@ describe('ngRest.$api', function() {
         expect(endpointA.getURL()).toEqual('/blog/post/');
         expect(blogAPI.post.getURL()).toEqual('/blog/post/');
         expect(blogAPI.post.hasAvailableMethod()).toBeFalsy();
+
     });
 
     it('should be success to attach endpoint', function() {
-        var blogAPI = $api('blogAPI', '/blog/');
 
+        var blogAPI = $api('blogAPI', '/blog/');
         var endpointB = $endpoint('post/comment/');
 
         blogAPI.attach(endpointB);
@@ -102,6 +106,7 @@ describe('ngRest.$api', function() {
         expect(blogAPI.post.comment).toBeDefined();
         expect(blogAPI.post.comment.getURL()).toEqual('/blog/post/comment/');
         expect(blogAPI.post.comment.hasAvailableMethod()).toBeFalsy();
+
     });
 
 });

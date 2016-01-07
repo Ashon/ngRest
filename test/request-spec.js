@@ -14,15 +14,20 @@ describe('ngRest.$request', function() {
     }));
 
     it('should be a function', function() {
+
         expect(typeof $request).toEqual('function');
+
     });
 
     it('instance should be a function', function() {
+
         var instance = $request(null, null, null);
         expect(typeof instance).toEqual('function');
+
     });
 
     it('should has "url", "method", "schema"', function() {
+
         var schema = {
             params: {
                 id: {
@@ -36,6 +41,7 @@ describe('ngRest.$request', function() {
         expect(request.getURL()).toEqual('http://localhost:8080/');
         expect(request.getMethod()).toEqual('get');
         expect(request.getSchema()).toEqual(schema);
+
     });
 
     it('should response success', function() {
@@ -63,6 +69,7 @@ describe('ngRest.$request', function() {
         });
 
         $httpBackend.flush();
+
     });
 
     it('should throw error when not nullable param is null', function() {
@@ -95,6 +102,7 @@ describe('ngRest.$request', function() {
         });
 
         $httpBackend.flush();
+
     });
 
 });
