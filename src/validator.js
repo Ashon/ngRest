@@ -1,6 +1,9 @@
 
 (function(angular) { 'use strict';
 
+    var $validatorErr = angular.$$minErr('ngRest');
+
+
     function isPrimitive(value) {
         switch (typeof value) {
             case 'number': /* falls through */
@@ -30,7 +33,6 @@
         return hasSchemeType(scheme) && isNumberObject(scheme.type);
     }
 
-    var $validatorErr = angular.$$minErr('ngRest');
 
     // validation methods
     function raiseIfDataIsNotPrimitiveType(scheme, key, data) {
@@ -54,10 +56,18 @@
             throw $validatorErr('valid', key + ' \'' + data[key] + '\' is not valid number');
     }
 
+    var defaultRuleset = [
+        raiseIfDataIsNotPrimitiveType,
+        raiseIfSchemeHasNoType,
+        raiseIfDataIsNull,
+        raiseIfDataIsNotValidNumber,
+        raiseIfSchemeIsFunction
+    ];
+
+
     function $Validator(rules) {
         this.$rules = rules;
     }
-
     $Validator.prototype = {
 
         $rules: [],
@@ -85,20 +95,15 @@
         }
     };
 
-    var defaultRuleset = [
-        raiseIfDataIsNotPrimitiveType,
-        raiseIfSchemeHasNoType,
-        raiseIfDataIsNull,
-        raiseIfDataIsNotValidNumber,
-        raiseIfSchemeIsFunction
-    ];
 
     var $$ValidatorFactory = function() {
         return new $Validator(defaultRuleset);
     };
 
+
     angular
         .module('ngRest.$validator', [])
         .factory('$validator', $$ValidatorFactory);
+
 
 })(angular);

@@ -1,6 +1,7 @@
 
 (function(angular) { 'use strict';
 
+
     var $$RequestProvider = function() {
 
         this.$get = [
@@ -13,7 +14,7 @@
 
                     var self = this;
 
-                    self.$schema = {};
+                    self.$schema = schema;
                     self.$config = {
                         method: method,
                         url: url
@@ -21,13 +22,14 @@
 
                     function $httpWrapper(requestData) {
 
-                        self.$schema = schema;
                         self.$rawData = requestData;
 
                         angular.forEach(self.$schema, function(schema, bodyType) {
+
                             try {
                                 // if data validate failed, then raise exception.
-                                self.$config[bodyType] = $validator.validate(schema, requestData);
+                                self.$config[bodyType] = $validator.validate(schema, self.$rawData);
+
                             } catch(msg) {
                                 $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
                             }
@@ -64,7 +66,9 @@
         ];
     }
 
+
     angular.module('ngRest.$request', [ 'ngRest.$validator' ])
         .provider('$request', $$RequestProvider);
+
 
 })(angular);

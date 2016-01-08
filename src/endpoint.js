@@ -1,6 +1,12 @@
 
 (function(angular) { 'use strict';
 
+
+    var knownMethods = [
+        'get', 'post', 'put', 'delete',
+        'patch', 'head', 'option'];
+
+
     var $$EndpointConfigProvider = function() {
 
         var self = this;
@@ -19,6 +25,7 @@
             return self;
         };
     };
+
 
     var $$EndpointFactory = [
 
@@ -52,13 +59,14 @@
                 getAvailableMethods: function() {
                     var self = this;
 
-                    var knownMethods = ['get', 'post', 'put', 'delete', 'patch', 'head', 'option'];
+                    return knownMethods
+                        .map(function(method) {
+                            return '$' + method;
+                        })
+                        .filter(function($method) {
+                            return Object.keys(self).indexOf($method) != -1;
+                        });
 
-                    return knownMethods.map(function(method) {
-                        return '$' + method;
-                    }).filter(function($method) {
-                        return Object.keys(self).indexOf($method) != -1;
-                    });
                 },
                 hasAvailableMethod: function() {
                     return this.getAvailableMethods().length > 0;
@@ -83,6 +91,7 @@
         }
     ];
 
+
     // compose ngRest
     angular
         .module('ngRest.$endpoint', [
@@ -90,5 +99,6 @@
         ])
         .provider('$endpointConfig', $$EndpointConfigProvider)
         .factory('$endpoint', $$EndpointFactory);
+
 
 })(angular);

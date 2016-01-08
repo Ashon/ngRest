@@ -1,6 +1,7 @@
 
 (function(angular) { 'use strict';
 
+
     var $$ApiConfigProvider = function() {
 
         // expose provider
@@ -9,12 +10,12 @@
             '$endpointConfig',
 
             function($endpointConfig) {
-
                 return $endpointConfig;
             }
         ];
 
     };
+
 
     var $$ApiFactory = [
 
@@ -28,7 +29,9 @@
             }
 
             $API.prototype = {
+
                 _routes: {},
+
                 $endpoint: function(route) {
                     var endpoint = $endpoint(route);
 
@@ -37,33 +40,40 @@
 
                     return endpoint;
                 },
+
                 attach: function($endpoint) {
-                    var self = this;
 
-                    var parsedPath = $endpoint.getRoutePath().split('/').filter(function(path) {
-                        return path.length > 0;
-                    });
+                    var cursor = this._routes;
 
-                    var cursor = self._routes;
+                    function hasLength(value) {
+                        return value.length > 0;
+                    }
 
-                    parsedPath.forEach(function(path, index) {
-
+                    function bindEndpointIterator(path, index, array) {
                         if(angular.isUndefined(cursor[path]))
                             cursor[path] = {};
 
-                        if(index === parsedPath.length - 1) {
+                        if(index === array.length - 1) {
                             if(angular.isUndefined(cursor[path].$routePath))
                                 cursor[path] = angular.extend($endpoint, cursor[path]);
                         } else
                             cursor = cursor[path];
+                    }
 
-                    });
+                    $endpoint
+                        .getRoutePath()
+                        .split('/')
+                        .filter(hasLength)
+                        .forEach(bindEndpointIterator);
 
-                    angular.extend(self, self._routes)
+                    angular.extend(this, this._routes);
+
+                    return this;
                 },
+
                 setBaseRoute: $apiConfig.setBaseRoute,
                 getBaseRoute: $apiConfig.getBaseRoute,
-            }
+            };
 
             return function(name, baseRoute) {
                 return new $API(name, baseRoute);
@@ -71,9 +81,11 @@
         }
     ];
 
+
     angular
         .module('ngRest.$api', [ 'ngRest.$endpoint' ])
         .provider('$apiConfig', $$ApiConfigProvider)
         .factory('$api', $$ApiFactory);
+
 
 })(angular);
