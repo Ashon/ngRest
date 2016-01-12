@@ -62,8 +62,10 @@
                             } else
                                 cursor = cursor[path];
                         } else {
-                            if(index === array.length - 1)
-                                cursor['$$' + urlRouteParams[1]] = angular.extend($endpoint['$$' + urlRouteParams[1]], $endpoint);
+                            if(index === array.length - 1) {
+                                var routeparamFnName = '$$' + urlRouteParams[1];
+                                cursor[routeparamFnName] = angular.extend($endpoint[routeparamFnName], $endpoint);
+                            }
                         }
                     }
 
