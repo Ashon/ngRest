@@ -6,6 +6,9 @@
         'get', 'post', 'put', 'delete',
         'patch', 'head', 'option'];
 
+    function add$(value) {
+        return '$' + value;
+    }
 
     var $$EndpointConfigProvider = function() {
 
@@ -29,43 +32,79 @@
 
     var $$EndpointFactory = [
 
-        '$request', '$endpointConfig',
+        '$request', '$endpointConfig', '$urlResolver',
 
-        function($request, $endpointConfig) {
+        function($request, $endpointConfig, $urlResolver) {
 
             function $Endpoint(route) {
-                this.$routePath = route;
+                this.setRoutePath(route || '');
+                this.$$urlResolver.setUrlPrefix($endpointConfig.getBaseRoute());
             }
 
             $Endpoint.prototype = {
 
-                $routePath: '',
+                $$routePath: '',
+                $$urlResolver: undefined,
 
                 setRoutePath: function(routePath) {
-                    this.$routePath = routePath;
+                    var self = this;
+
+                    function hasLength(value) {
+                        return value.length > 0;
+                    }
+
+                    function dispatchRouteParam(path) {
+                        var urlRouteParams = path.split(':');
+
+                        if(urlRouteParams[0].length === 0) {
+                            var routeParamName = urlRouteParams[1];
+
+                            self['$$' + routeParamName] = function(value) {
+                                self.$$urlResolver.setRouteParam(routeParamName, value);
+
+                                return self;
+                            }
+                        }
+                    }
+
+                    if(angular.isUndefined(self.$$urlResolver))
+                        self.$$urlResolver = new $urlResolver(routePath);
+                    else
+                        self.$$urlResolver.setRoute(routePath);
+
+                    self.$$routePath = routePath;
+                    self.$$routePath.split('/').filter(hasLength).forEach(dispatchRouteParam);
+
+                    return self;
+                },
+                flush: function() {
+                    this.$$urlResolver.flush();
+
                     return this;
                 },
                 getRoutePath: function() {
-                    return this.$routePath;
+                    return this.$$routePath;
                 },
                 getURL: function() {
-                    return $endpointConfig.getBaseRoute() + this.$routePath;
+                    var self = this;
+
+                    return self.$$urlResolver.get();
                 },
                 registerMethod: function(scheme, method) {
+
                     // add '$' to avoid of collision with url.
-                    this['$' + method] = $request(this.getURL(), method, scheme);
+                    this[add$(method.toLowerCase())] = $request(this.$$urlResolver, method, scheme);
+
                     return this;
                 },
                 getAvailableMethods: function() {
-                    var self = this;
 
-                    return knownMethods
-                        .map(function(method) {
-                            return '$' + method;
-                        })
-                        .filter(function($method) {
-                            return Object.keys(self).indexOf($method) != -1;
-                        });
+                    var self = this;
+                    function hasItemIterator(value) {
+                        return Object.keys(self).indexOf(value) != -1;
+                    }
+
+                    return knownMethods.map(add$).filter(hasItemIterator);
 
                 },
                 hasAvailableMethod: function() {
@@ -74,7 +113,6 @@
                 dispatch: function(requestSchema) {
 
                     var self = this;
-
                     angular.forEach(requestSchema, function(scheme, method) {
                         self.registerMethod(scheme, method);
                     });
@@ -95,7 +133,7 @@
     // compose ngRest
     angular
         .module('ngRest.$endpoint', [
-            'ngRest.$request'
+            'ngRest.$request', 'ngRest.$urlResolver'
         ])
         .provider('$endpointConfig', $$EndpointConfigProvider)
         .factory('$endpoint', $$EndpointFactory);

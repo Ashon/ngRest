@@ -1,6 +1,9 @@
 
 (function(angular) { 'use strict';
 
+    function getSerializedURL(urlResolver) {
+        return angular.isObject(urlResolver) ? urlResolver.get() : urlResolver;
+    }
 
     var $$RequestProvider = function() {
 
@@ -10,37 +13,42 @@
 
             function($http, $exceptionHandler, $validator) {
 
-                function $Request(url, method, schema) {
+                function $Request(urlResolver, method, schema) {
 
                     var self = this;
 
                     self.$schema = schema;
                     self.$config = {
+                        url: getSerializedURL(urlResolver),
                         method: method,
-                        url: url
                     };
 
                     function $httpWrapper(requestData) {
 
+                        self.$config.url = getSerializedURL(urlResolver);
                         self.$rawData = requestData;
 
-                        angular.forEach(self.$schema, function(schema, bodyType) {
+                        if(angular.isDefined(self.$schema)) {
+                            angular.forEach(self.$schema, function(schema, bodyType) {
+                                try {
+                                    // if data validate failed, then raise exception.
+                                    self.$config[bodyType] = $validator.validate(schema, self.$rawData);
 
-                            try {
-                                // if data validate failed, then raise exception.
-                                self.$config[bodyType] = $validator.validate(schema, self.$rawData);
-
-                            } catch(msg) {
-                                $exceptionHandler(url + ' [' + method.toUpperCase() + '] ' + msg);
-                            }
-                        });
+                                } catch(msg) {
+                                    $exceptionHandler(self.$config.url + ' [' + method.toUpperCase() + '] ' + msg);
+                                }
+                            });
+                        } else
+                            angular.forEach(requestData, function(data, bodyType) {
+                                self.$config[bodyType] = data
+                            });
 
                         return $http(self.$config);
                     }
 
                     $httpWrapper.prototype = {
                         getURL: function() {
-                            return url;
+                            return getSerializedURL(urlResolver);
                         },
                         getMethod: function() {
                             return method;
@@ -59,8 +67,9 @@
                     $rawData: undefined,
                 };
 
-                return function(url, method, schema) {
-                    return new $Request(url, method, schema);
+                return function(urlResolver, method, schema) {
+
+                    return new $Request(urlResolver, method, schema);
                 };
             }
         ];

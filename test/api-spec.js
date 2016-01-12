@@ -109,4 +109,31 @@ describe('ngRest.$api', function() {
 
     });
 
+    it('should be success to attach endpoint with routeparam', function() {
+
+        var blogAPI = $api('blogAPI', '/blog/');
+        var endpointB = $endpoint('post/:postId/comment/');
+
+        var endpointC = $endpoint('post/:postId/comment/:commentId/');
+
+        blogAPI.attach(endpointB);
+        blogAPI.attach(endpointC);
+
+        expect(blogAPI.post.comment.$$postId(123).getURL()).toEqual('/blog/post/123/comment/');
+        expect(blogAPI.post.comment).toBeDefined();
+        expect(blogAPI.post.comment.hasAvailableMethod()).toBeFalsy();
+
+        expect(
+            blogAPI.post.comment.$$postId(1324).getURL()
+        ).toEqual('/blog/post/1324/comment/');
+
+        expect(
+            blogAPI.post.comment.$$commentId(13123451).$$postId(1324).getURL()
+        ).toEqual('/blog/post/1324/comment/13123451/');
+
+        expect(
+            blogAPI.post.comment.$$postId(1324).$$commentId(1311231123123123).getURL()
+        ).toEqual('/blog/post/1324/comment/1311231123123123/');
+
+    });
 });

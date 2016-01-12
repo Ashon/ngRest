@@ -15,22 +15,26 @@
         }
     }
     function isNumberObject(object) {
-        return angular.isFunction(object) && toString.call(object()) === '[object Number]';
+        return angular.isFunction(object)
+            && toString.call(object()) === '[object Number]';
     }
     function isValidNumber(value) {
         return !isNaN(value) && isFinite(value);
     }
     function hasValue(object, key) {
-        return angular.isDefined(object) && angular.isDefined(object[key]);
+        return angular.isDefined(object)
+            && angular.isDefined(object[key]);
     }
     function hasSchemeType(scheme) {
         return hasValue(scheme, 'type');
     }
     function isNullableScheme(scheme) {
-        return hasValue(scheme, 'nullable') && scheme.nullable === true;
+        return hasValue(scheme, 'nullable')
+            && scheme.nullable === true;
     }
     function isSchemeTypeNumber(scheme) {
-        return hasSchemeType(scheme) && isNumberObject(scheme.type);
+        return hasSchemeType(scheme)
+            && isNumberObject(scheme.type);
     }
 
 

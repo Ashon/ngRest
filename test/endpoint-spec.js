@@ -126,17 +126,17 @@ describe('ngRest.$endpoint', function() {
 
         $endpointConfig.setBaseRoute('/');
 
-        var instance = $endpoint('dummies/blog.json')
-            .dispatch({
-                get: {
-                    params: {
-                        id: {
-                            type: Number,
-                            nullable: true
-                        }
+        var instance = $endpoint('dummies/blog.json');
+        instance.dispatch({
+            get: {
+                params: {
+                    id: {
+                        type: Number,
+                        nullable: true
                     }
                 }
-            });
+            }
+        });
 
         $httpBackend.expectGET('/dummies/blog.json?id=1').respond(200, {
             id: 1,
@@ -199,6 +199,81 @@ describe('ngRest.$endpoint', function() {
         instance.$get({ id : 1 }).success(function(response) {
             expect(response.title).toEqual('hello ngRest');
         });
+
+        $httpBackend.flush();
+
+    });
+
+    it('should has url route params', function() {
+
+        var endpointA = $endpoint('users/:userId/groups/');
+        expect(endpointA.$$userId).toBeDefined();
+        expect(endpointA.$$userId('123').getURL()).toEqual('/users/123/groups/');
+        expect(endpointA.$$userId(123).getURL()).toEqual('/users/123/groups/');
+
+        var endpointB = $endpoint('users/:userId/groups/:groupId/');
+        expect(endpointB.$$userId).toBeDefined();
+        expect(endpointB.$$groupId).toBeDefined();
+
+        expect(endpointB.$$userId(123).$$groupId('456').getURL()).toEqual('/users/123/groups/456/');
+        expect(endpointB.$$groupId(456).$$userId(123).getURL()).toEqual('/users/123/groups/456/');
+
+    });
+
+    it('should compile url dynamically', function() {
+
+        var endpoint = $endpoint('users/:userId/groups/:groupId/');
+
+        expect(endpoint.$$userId(123).$$groupId('456').getURL()).toEqual('/users/123/groups/456/');
+
+        endpoint.flush();
+        expect(endpoint.$$userId(123).getURL()).toEqual('/users/123/groups/:groupId/');
+
+    });
+
+    it('should pass to request with url route params', function() {
+
+        $httpBackend.expectGET('/users/123/groups/?id=1').respond(200, {
+            message: 'success'
+        });
+
+        $httpBackend.expectGET('/users/456/groups/?id=3').respond(200, {
+            message: 'failed'
+        });
+
+        $httpBackend.expectGET('/users/78/groups/').respond(200, {
+            message: 'hi'
+        });
+
+        var endpoint = $endpoint('users/:userId/groups/')
+            .registerMethod({
+                params: {
+                    id: {
+                        type: Number,
+                        nullable: true
+                    }
+                }
+            }, 'get')
+
+        expect(endpoint.getURL()).toEqual('/users/:userId/groups/');
+
+        endpoint
+            .$$userId(123)
+            .$get({ id: 1 }).success(function(response) {
+                expect(response.message).toEqual('success');
+            });
+
+        endpoint
+            .$$userId(456)
+            .$get({ id: 3 }).success(function(response) {
+                expect(response.message).toEqual('failed');
+            });
+
+        endpoint
+            .$$userId(78)
+            .$get().success(function(response) {
+                expect(response.message).toEqual('hi');
+            });
 
         $httpBackend.flush();
 

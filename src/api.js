@@ -49,22 +49,29 @@
                         return value.length > 0;
                     }
 
-                    function bindEndpointIterator(path, index, array) {
-                        if(angular.isUndefined(cursor[path]))
-                            cursor[path] = {};
+                    function bindEndpoint(path, index, array) {
+                        var urlRouteParams = path.split(':');
 
-                        if(index === array.length - 1) {
-                            if(angular.isUndefined(cursor[path].$routePath))
-                                cursor[path] = angular.extend($endpoint, cursor[path]);
-                        } else
-                            cursor = cursor[path];
+                        if(urlRouteParams[0] !== '') {
+                            if(angular.isUndefined(cursor[path]))
+                                cursor[path] = {};
+
+                            if(index === array.length - 1) {
+                                if(angular.isUndefined(cursor[path].$routePath))
+                                    cursor[path] = angular.extend($endpoint, cursor[path]);
+                            } else
+                                cursor = cursor[path];
+                        } else {
+                            if(index === array.length - 1)
+                                cursor['$$' + urlRouteParams[1]] = angular.extend($endpoint['$$' + urlRouteParams[1]], $endpoint);
+                        }
                     }
 
                     $endpoint
                         .getRoutePath()
                         .split('/')
                         .filter(hasLength)
-                        .forEach(bindEndpointIterator);
+                        .forEach(bindEndpoint);
 
                     angular.extend(this, this._routes);
 
