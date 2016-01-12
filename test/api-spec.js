@@ -112,16 +112,25 @@ describe('ngRest.$api', function() {
     it('should be success to attach endpoint with routeparam', function() {
 
         var blogAPI = $api('blogAPI', '/blog/');
+        var endpointA = $endpoint('post/:postId/');
         var endpointB = $endpoint('post/:postId/comment/');
-
         var endpointC = $endpoint('post/:postId/comment/:commentId/');
 
+        blogAPI.attach(endpointA);
         blogAPI.attach(endpointB);
         blogAPI.attach(endpointC);
 
         expect(blogAPI.post.comment.$$postId(123).getURL()).toEqual('/blog/post/123/comment/');
         expect(blogAPI.post.comment).toBeDefined();
         expect(blogAPI.post.comment.hasAvailableMethod()).toBeFalsy();
+
+        expect(
+            blogAPI.post.$$postId(1324).getURL()
+        ).toEqual('/blog/post/1324/');
+
+        expect(
+            blogAPI.post.$$postId(1324).$$postId(123).getURL()
+        ).toEqual('/blog/post/123/');
 
         expect(
             blogAPI.post.comment.$$postId(1324).getURL()
@@ -131,9 +140,22 @@ describe('ngRest.$api', function() {
             blogAPI.post.comment.$$commentId(13123451).$$postId(1324).getURL()
         ).toEqual('/blog/post/1324/comment/13123451/');
 
+        // chain test
         expect(
             blogAPI.post.comment.$$postId(1324).$$commentId(1311231123123123).getURL()
         ).toEqual('/blog/post/1324/comment/1311231123123123/');
+
+        expect(
+            blogAPI.post.comment.$$postId(3123123123).$$commentId(13123451).$$postId(1324).getURL()
+        ).toEqual('/blog/post/1324/comment/13123451/');
+
+        expect(
+            blogAPI.post.comment.$$postId(3123123123).$$postId(1324).$$commentId(13123451).getURL()
+        ).toEqual('/blog/post/1324/comment/13123451/');
+
+        expect(
+            blogAPI.post.comment.$$postId(3123123123).$$postId(1324).$$commentId(13123451).$$postId(3123123123).getURL()
+        ).toEqual('/blog/post/3123123123/comment/13123451/');
 
     });
 });

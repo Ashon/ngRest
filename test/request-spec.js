@@ -105,4 +105,30 @@ describe('ngRest.$request', function() {
 
     });
 
+    it('should pass to request which defined with empty schema', function() {
+
+        $httpBackend
+            .expectGET('http://test.com/blogs/')
+            .respond(200, {
+                message: 'hi'
+            });
+
+        $httpBackend
+            .expectGET('http://test.com/blogs/?id=1')
+            .respond(200, {
+                message: 'hi'
+            });
+
+        var request = $request('http://test.com/blogs/', 'GET');
+
+        request().success(function(response) {
+            expect(response.message).toEqual('hi');
+        });
+
+        request({ params: { id: 1 } }).success(function(response) {
+            expect(response.message).toEqual('hi');
+        });
+
+        $httpBackend.flush();
+    });
 });
