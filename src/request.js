@@ -38,10 +38,9 @@
                                     $exceptionHandler(self.$config.url + ' [' + method.toUpperCase() + '] ' + msg);
                                 }
                             });
-                        } else
-                            angular.forEach(requestData, function(data, bodyType) {
-                                self.$config[bodyType] = data
-                            });
+                        } else {
+                            self.$config = angular.merge(self.$config, requestData);
+                        }
 
                         return $http(self.$config);
                     }
